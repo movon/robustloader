@@ -11,12 +11,12 @@ const IMAGE_FILENAME: &str = "target/bootloader.img";
 
 fn read_file_bytes(path: &str) -> Vec<u8> {
     let mut bytes = Vec::new();
-    File::open(path).and_then(|mut f| f.read_to_end( &mut bytes)).expect("Failed to read file");
+    File::open(path).and_then(|mut f| f.read_to_end( &mut bytes)).expect(&format!("Failed to read file {}", path));
     bytes
 }
 
 fn parse_elf(bytes: &Vec<u8>) -> ElfFile {
-    let elf_file: ElfFile = ElfFile::new(bytes).expect("Failed to parse ELF");
+    let elf_file: ElfFile = ElfFile::new(bytes).expect("Failed to parse ELF!");
     elf_file
 }
 
@@ -28,8 +28,8 @@ fn write_section_to_file(elf_file: &ElfFile, section_name: &str, filename: &str)
         .append(false)
         .create(true)
         .open(filename)
-        .expect("Failed to create file");
-    file.write(&bootloader_bytes).expect("Failed to write data to file");
+        .expect(&format!("Failed to create file {}", filename));
+    file.write(&bootloader_bytes).expect(&format!("Failed to write data to file {}", filename));
 }
 
 fn main() {
@@ -40,9 +40,12 @@ fn main() {
 
     let elf_file_path = &args[1];
 
+    println!("Reading ELF file {}", elf_file_path);
     let elf_bytes = read_file_bytes(elf_file_path);
+    println!("Parsing ELF");
 	let elf = parse_elf(&elf_bytes);
 
+    println!("Writing the {} section to file {}", BOOTLOADER_SECTION, IMAGE_FILENAME);
     write_section_to_file(&elf, BOOTLOADER_SECTION, IMAGE_FILENAME);
-    println!("Wrote the {} section to file {}!", BOOTLOADER_SECTION, IMAGE_FILENAME);
+    println!("Succesfully wrote the {} section to file {}!", BOOTLOADER_SECTION, IMAGE_FILENAME);
 }
