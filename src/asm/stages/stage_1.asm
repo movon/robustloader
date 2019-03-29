@@ -18,8 +18,8 @@ _start:
 
 	lea si, REAL_MODE_MSG
 	call print_string_16
-	here:
-	jmp here
+	here_loop:
+	jmp here_loop
 
 .include "src/asm/utils/16_print_string.asm"
 .include "src/asm/utils/16_read_disk.asm"
