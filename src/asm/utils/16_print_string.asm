@@ -11,8 +11,6 @@ print_string_loop_16:
 	cmp [si], cl
 	je print_string_endloop_16
 
-	#mov bl, GREEN_COLOR
-
 	mov al, [si]
 	int 0x10
 	inc si
