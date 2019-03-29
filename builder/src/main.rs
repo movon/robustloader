@@ -16,7 +16,6 @@ fn read_file_bytes(path: &str) -> Vec<u8> {
 }
 
 fn read_elf(bytes: &Vec<u8>) -> ElfFile {
-    // println!("Bytes: {:?}", bytes);
     let elf_file: ElfFile = ElfFile::new(bytes).expect("Failed to parse ELF");
     elf_file
 }
@@ -45,4 +44,5 @@ fn main() {
 	let elf = read_elf(&elf_bytes);
 
     write_section_to_file(&elf, BOOTLOADER_SECTION, IMAGE_FILENAME);
+    println!("Wrote the {} section to file {}!", BOOTLOADER_SECTION, IMAGE_FILENAME)
 }
