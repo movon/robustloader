@@ -5,3 +5,11 @@ authors = ["talbor49 <talbor49@gmail.com>", "DanielEliad <daniel.eliad32@gmail.c
 edition = "2019"
 
 [dependencies]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = false
+debug = true
