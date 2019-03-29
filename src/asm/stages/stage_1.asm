@@ -16,7 +16,7 @@ _start:
 	mov sp, _stack_end
 	mov bp, sp
 
-	mov ax, REAL_MODE_MSG
+	lea ax, REAL_MODE_MSG
 	mov si, ax
 	call print_string_16
 
