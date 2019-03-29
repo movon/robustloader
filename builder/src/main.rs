@@ -28,7 +28,7 @@ fn write_section_to_file(elf_file: &ElfFile, section_name: &str, filename: &str)
         .append(false)
         .create(true)
         .open(filename)
-        .expect("Failed to open file");
+        .expect("Failed to create file");
     file.write(&bootloader_bytes).expect("Failed to write data to file");
 }
 

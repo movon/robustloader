@@ -16,8 +16,7 @@ _start:
 	mov sp, _stack_end
 	mov bp, sp
 
-	mov bx, REAL_MODE_MSG
-	call print_string
+	call print_string_16
 
 
 
