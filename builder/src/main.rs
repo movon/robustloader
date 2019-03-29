@@ -5,8 +5,8 @@ use std::io::{Read, Write};
 use xmas_elf::ElfFile;
 use std::env;
 
-const BOOTLOADER_SECTION = ".bootloader";
-const IMAGE_FILENAME = "target/bootloader.img";
+const BOOTLOADER_SECTION: &str = ".bootloader";
+const IMAGE_FILENAME: &str = "target/bootloader.img";
 
 
 fn read_file_bytes(path: &str) -> Vec<u8> {
