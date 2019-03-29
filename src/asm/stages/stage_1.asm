@@ -19,7 +19,7 @@ _start:
 	mov bx, REAL_MODE_MSG
 	call print_string
 
-%include "16_print_string.asm"
+%include "utils/16_print_string.asm"
 
 REAL_MODE_MSG	db	"Started in 16 bit mode!", 0
 
