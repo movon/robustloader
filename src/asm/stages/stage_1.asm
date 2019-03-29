@@ -16,10 +16,9 @@ _start:
 	mov sp, _stack_end
 	mov bp, sp
 
-	mov bx, REAL_MODE_MSG
-	call print_string
-
-
+	mov ax, REAL_MODE_MSG
+	mov si, ax
+	call print_string_16
 
 .include "src/asm/utils/16_print_string.asm"
 .include "src/asm/utils/16_read_disk.asm"
