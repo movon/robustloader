@@ -37,9 +37,7 @@ done:
 disk_error:
 	lea bx, DISK_ERROR_MESSAGE
 	call print_string
-	mov dh, ah
-	call print_hex
-	disk_error_loop:
+disk_error_loop:
 	jmp disk_error_loop
 
 DISK_ERROR_MESSAGE:	.asciz "Disk read message! Return Code: "
