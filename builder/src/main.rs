@@ -1,40 +1,16 @@
-use goblin::{error, Object};
-use std::path::Path;
-use std::env;
+extern crate xmas_elf;
+
 use std::fs::File;
 use std::io::Read;
 
-fn run () -> error::Result<()> {
-    for (i, arg) in env::args().enumerate() {
-		println!("{} {}", i, arg);
-        if i == 1 {
-            let path = Path::new(arg.as_str());
-            let mut fd = File::open(path)?;
-            let mut buffer = Vec::new();
-            fd.read_to_end(&mut buffer)?;
-            println!("Reading binary");
-            match Object::parse(&buffer)? {
-                Object::Elf(elf) => {
-                    println!("elf: {:#?}", &elf);
-                },
-                Object::PE(pe) => {
-                    println!("pe: {:#?}", &pe);
-           			println!("PE: {}", (&pe));
-                },
-                Object::Mach(mach) => {
-                    println!("mach: {:#?}", &mach);
-                },
-                Object::Archive(archive) => {
-                    println!("archive: {:#?}", &archive);
-                },
-                Object::Unknown(magic) => { println!("unknown magic: {:#x}", magic) }
-            }
-        }
-    }
-    Ok(())
+fn read_elf<'a>(path: &str) -> &'a xmas_elf::ElfFile<'a> {
+    let mut elf_bytes:  Vec<u8>  = Vec::new();
+    File::open(path).and_then(|mut f| f.read_to_end(&mut elf_bytes)).expect("Failed to read file");
+    let elf_file = xmas_elf::ElfFile::new(&elf_bytes).expect("Failed to parse ELF");
+    &elf_file
 }
 
 fn main() {
-	run().expect("Error in parsing");
-	println!("Hello world");
+	let elf = read_elf("C:\\dev\\robustloader\\target\\x86_64-bootloader\\release\\robustloader");
+    println!("Elf: {:#?}", elf);
 }
