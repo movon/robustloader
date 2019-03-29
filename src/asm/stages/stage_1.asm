@@ -20,6 +20,7 @@ _start:
 	call print_string
 
 %include "utils/16_print_string.asm"
+%include "utils/16_read_disk.asm"
 
 REAL_MODE_MSG	db	"Started in 16 bit mode!", 0
 
