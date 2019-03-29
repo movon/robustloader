@@ -1,3 +1,4 @@
+.code16
 ; Function to print a string in 16 bits
 ; Accepts the pointer to the string in si
 16_print_string:
