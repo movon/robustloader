@@ -3,6 +3,7 @@ extern crate xmas_elf;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use xmas_elf::ElfFile;
+use std::env;
 
 const BOOTLOADER_SECTION: &str = ".bootloader";
 const IMAGE_FILENAME: &str = "target/bootloader.img";
@@ -32,7 +33,15 @@ fn write_section_to_file(elf_file: &ElfFile, section_name: &str, filename: &str)
 }
 
 fn main() {
-    let elf_bytes = read_file_bytes("C:\\dev\\robustloader\\target\\x86_64-bootloader\\release\\robustloader");
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        println!("Usage: {} <bootloader elf file path>", &args[0]);
+        ::std::process::exit(1);
+    }
+
+    let elf_file_path = &args[0];
+
+    let elf_bytes = read_file_bytes(elf_file_path);
 	let elf = read_elf(&elf_bytes);
 
     write_section_to_file(&elf, BOOTLOADER_SECTION, IMAGE_FILENAME);
