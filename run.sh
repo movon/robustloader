@@ -1,5 +1,5 @@
+rm ../target/x86_64-bootloader/debug/robustloader
+rm ./builder/target/bootloader.img
 cargo xbuild --target ./x86_64-bootloader.json
-cd ./builder
-cargo run ../target/x86_64-bootloader/debug/robustloader
-cd ../
-qemu-system-x86_64 ./builder/target/bootloader.img
+cd ./builder && cargo run ../target/x86_64-bootloader/debug/robustloader
+cd ../ && qemu-system-x86_64 ./builder/target/bootloader.img

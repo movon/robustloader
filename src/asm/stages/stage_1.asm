@@ -16,9 +16,10 @@ _start:
 	mov sp, _stack_end
 	mov bp, sp
 
-	lea ax, REAL_MODE_MSG
-	mov si, ax
+	lea si, REAL_MODE_MSG
 	call print_string_16
+	here:
+	jmp here
 
 .include "src/asm/utils/16_print_string.asm"
 .include "src/asm/utils/16_read_disk.asm"
