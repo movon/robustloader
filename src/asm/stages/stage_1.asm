@@ -4,7 +4,8 @@
 .code16
 
 _start:
-	# clear all registers
+	# clear all registers and store the boot drive
+	mov [BOOT_DRIVE], dl # The BIOS stores the boot drive in dl
 	xor ax, ax
 	xor bx, bx
 	xor cx, cx
@@ -13,9 +14,8 @@ _start:
 	# Initialize the stack to be at _stack_end and make
 	# direction of memory processing lowest-to-highest
 	cld
-	mov sp, _stack_end
+	lea sp, _stack_end
 	mov bp, sp
-
 
 	# Announce real mode :)
 	lea si, REAL_MODE_MSG
@@ -25,19 +25,47 @@ _start:
 	# Enale a20 line - https://wiki.osdev.org/A20_Line
 	call enable_a20
 
-	# Enter protected mode!
-	call enter_protected_mode
+    lea si, ENTER_PROTECTED_MODE_STR
+    call print_string_16
+
+
+enter_protected_mode:
+	# Push old segments
+    push ds
+    push es
+	# disable interrupts
+	cli
+	# load GDT register with start address of Global Descriptor Table
+    lgdt [gdt32info]
+
+	# set PE (Protection Enable) bit in CR0 (Control Register 0)
+	mov eax, cr0
+	or al, 1       
+	mov cr0, eax
+
+	jmp protected_mode
+
+protected_mode:
+	mov bx, 0x10
+    mov ds, bx # set data segment
+    mov es, bx # set extra segment
+
+    # Leave protected mode
+    and al, 0xfe    # clear protected mode bit
+    mov cr0, eax
+	# load DS, ES, FS, GS, SS, ESP
+
+unreal_mode:
+	pop es
+	pop ds
+
 
 here_loop:
 	jmp here_loop
 
+
 	# Load stage 2 code from disk into 0:_rest_of_bootloader_start_addr
 	call load_stage2
-
-
-
-
-
 
 
 enable_a20:
@@ -53,52 +81,25 @@ enable_a20_end:
 
 
 load_stage2:
-	# Load the bootloader stage 2 from boot drive into es:bx. In our case it is 0:_rest_of_bootloader_start_addr
+	# Load the kernel from boot drive into es:bx. In our case it is 0:_kernel_start_addr
 	# that is defined in the linker
-	lea si, READ_STAGE2_MSG
+	lea si, READ_KERNEL_MSG
 	call print_string_16
 
-	# Which drive to read from
-	mov dl, [BOOT_DRIVE] 
-	# Amount of sectors to read
+	mov dl, [BOOT_DRIVE]
 	mov dh, 0x15
 	xor ax, ax
-	# Segment to read into
 	mov es, ax
-	lea bx, _rest_of_bootloader_start_addr
-	# call read_disk_16
+	lea bx, _kernel_start_addr
+	call read_disk_16
 	ret
 
 
-enter_protected_mode:
-	# disable interrupts
-	cli
-	# load GDT register with start address of Global Descriptor Table
-    lgdt [gdt32]
-
-    lea si, ENTER_PROTECTED_MODE_STR
-    call print_string_16
-
-	# set PE (Protection Enable) bit in CR0 (Control Register 0)
-	mov eax, cr0
-	or al, 1       
-	mov cr0, eax
-	 
-	jmp protected_mode
-
-protected_mode:
-	mov bx, 0x10
-    mov ds, bx # set data segment
-    mov es, bx # set extra segment
-
-    and al, 0xfe    # clear protected mode bit
-    mov cr0, eax
-	# load DS, ES, FS, GS, SS, ESP
-	ret
 
 
 .include "src/asm/utils/16_print_string.asm"
 .include "src/asm/utils/16_read_disk.asm"
+.include "src/asm/utils/16_print_hex.asm"
 
 BOOT_DRIVE:			.byte	0
 ENTER_PROTECTED_MODE_STR:		.asciz 	"Entering protected mode!\r\n"
@@ -114,11 +115,24 @@ gdt32:
     # entry 0 is always unused
     .quad 0
 codedesc:
-	.quad 0xffff0000009acf00
+    .byte 0xff
+    .byte 0xff
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0x9a
+    .byte 0xcf
+    .byte 0
 datadesc:
-	.quad 0xffff00000092cf00
+    .byte 0xff
+    .byte 0xff
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0x92
+    .byte 0xcf
+    .byte 0
 gdt32_end:
-
 
 .org 510
 
