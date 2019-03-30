@@ -20,14 +20,15 @@ _start:
 	lea si, REAL_MODE_MSG
 	call print_string_16
 
-	# Load the kernel from boot drive into es:bx. In our case it is 0:0x1000
+	# Load the kernel from boot drive into es:bx. In our case it is 0:_kernel_start_addr
+	# that is defined in the linker
 	lea si, READ_KERNEL_MSG
 	call print_string_16
 
 	mov dl, [BOOT_DRIVE]
 	xor ax, ax
 	mov es, ax
-	mov bx, 0x1000
+	lea bx, _kernel_start_addr
 	call read_disk_16
 
 here_loop:
@@ -40,8 +41,8 @@ here_loop:
 .include "src/asm/utils/16_print_hex.asm"
 
 BOOT_DRIVE:			.byte	0
-REAL_MODE_MSG:		.asciz 	"Started in 16 bit mode!"
-READ_KERNEL_MSG:	.asciz	"Started reading kernel!"
+REAL_MODE_MSG:		.asciz 	"Started in 16 bit mode!\r\n"
+READ_KERNEL_MSG:	.asciz	"Started reading kernel!\r\n"
 
 .org 510
 

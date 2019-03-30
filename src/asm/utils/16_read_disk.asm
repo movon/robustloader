@@ -45,6 +45,6 @@ disk_error:
 	hlt
 
 DISK_ERROR_MESSAGE:		.asciz "Disk read message! Return Code: "
-DISK_SUCCESS_MESSAGE:	.asciz "Reading disk succeeded!"
+DISK_SUCCESS_MESSAGE:	.asciz "Reading disk succeeded!\r\n"
 
 SECTORS:			.byte 0
