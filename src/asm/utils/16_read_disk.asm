@@ -21,4 +21,14 @@ disk_error:				# Print the return code of interrupt
 DISK_ERROR_MESSAGE:		.asciz "Disk error message! Return Code: "
 DISK_SUCCESS_MESSAGE:	.asciz "Reading disk succeeded!\r\n"
 
-SECTORS:			.byte 0
+DAP:	
+	.byte 0x10  # Size of dap
+	.byte 0x0 	# Unused
+DAP_BLOCKS:
+	.word 0		# Number of sectors
+DAP_BUFFER_ADDR:
+	.word 0 	# Offset to memory buffer
+DAP_BUFFER_SEG:
+	.word 0 	# Segment of memory buffer
+DAP_START_LBA:
+	.quad		# Start logical block address
