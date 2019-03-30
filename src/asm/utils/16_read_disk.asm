@@ -1,6 +1,6 @@
 .code16
 # load DH num sectors to ES:BX from drive DL
-read_disk:
+read_disk_16:
 	mov [SECTORS], dh # So we remeber how many we need to read
 	mov ah, 0x02 # BIOS read sector function
 
@@ -31,15 +31,17 @@ maybe_retry:
 	jnz again
 	jmp disk_error
 done:
+	mov si, DISK_SUCCESS_MESSAGE
+	call print_string_16
 	ret
-
 # Print the return code of interrupt
 disk_error:
 	lea bx, DISK_ERROR_MESSAGE
-	call print_string
+	call print_string_16
 disk_error_loop:
 	jmp disk_error_loop
 
-DISK_ERROR_MESSAGE:	.asciz "Disk read message! Return Code: "
+DISK_ERROR_MESSAGE:		.asciz "Disk read message! Return Code: "
+DISK_SUCCESS_MESSAGE:	.asciz "Reading disk succeeded!"
 
 SECTORS:			.byte 0
