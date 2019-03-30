@@ -26,6 +26,7 @@ _start:
 	call print_string_16
 
 	mov dl, [BOOT_DRIVE]
+	mov dh, 0x15
 	xor ax, ax
 	mov es, ax
 	lea bx, _kernel_start_addr
