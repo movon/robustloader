@@ -31,4 +31,4 @@ DAP_BUFFER_ADDR:
 DAP_BUFFER_SEG:
 	.word 0 	# Segment of memory buffer
 DAP_START_LBA:
-	.quad		# Start logical block address
+	.quad 0		# Start logical block address
