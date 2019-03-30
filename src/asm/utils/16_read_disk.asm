@@ -30,6 +30,7 @@ maybe_retry:
 	dec di
 	jnz again
 	mov ah, 0x02 		# Call it again to get the correct return code
+	mov al, [SECTORS]   # How many sectors we want to read
 	int 0x13
 	jmp disk_error
 done:
