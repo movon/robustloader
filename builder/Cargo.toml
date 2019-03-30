@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 xmas-elf = "0.6.2"
+byteorder = "1.2.7"

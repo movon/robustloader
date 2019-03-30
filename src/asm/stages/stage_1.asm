@@ -1,4 +1,4 @@
-.section .boot-first-stage
+.section .boot-first-stage, "awx"
 .global _start
 .intel_syntax noprefix
 .code16
@@ -16,11 +16,6 @@ _start:
 	cld
 	lea sp, _stack_end
 	mov bp, sp
-
-	# Announce real mode :)
-	lea si, REAL_MODE_MSG
-	call print_string_16
-
 
 	# Enale a20 line - https://wiki.osdev.org/A20_Line
 	call enable_a20
@@ -60,11 +55,6 @@ unreal_mode:
 	pop ds
 	sti
 
-
-here_loop:
-	jmp here_loop
-
-
 	# Load stage 2 code from disk into 0:_rest_of_bootloader_start_addr
 	call load_stage2
 
@@ -82,30 +72,61 @@ enable_a20_end:
 
 
 load_stage2:
-	# Load the kernel from boot drive into es:bx. In our case it is 0:_kernel_start_addr
-	# that is defined in the linker
-	lea si, READ_KERNEL_MSG
-	call print_string_16
+	# Load the rest of the bootloader from boot drive into es:bx
 
-	mov dl, [BOOT_DRIVE]
-	mov dh, 0x15
-	xor ax, ax
-	mov es, ax
-	lea bx, _kernel_start_addr
-	call read_disk_16
-	ret
+    # check_int13h_extensions
+    mov ah, 0x41
+    mov bx, 0x55aa
+    mov dl, [BOOT_DRIVE] # dl contains drive number
+    int 0x13
+    jc no_int13h_extensions
+
+    # load_rest_of_bootloader_from_disk
+    xor eax, eax
+    xor ebx, ebx
+    xor edx, edx
+    lea eax, _rest_of_bootloader_start_addr
+
+    # start of memory buffer
+    mov [DAP_BUFFER_ADDR], ax
+
+    # number of disk blocks to load
+    lea ebx, _kernel_info_block_end
+    sub ebx, eax # end - start
+    shr ebx, 9 # divide by 512 (block size)
+    mov [DAP_BLOCKS], bx
+
+    # number of start block
+    lea ebx, _start
+    sub eax, ebx
+    shr eax, 9 # divide by 512 (block size)
+    mov [DAP_START_LBA], eax
 
 
+    call read_disk_16
+    # jump_to_second_stage
+    lea eax, stage_2
+    jmp eax
+
+no_int13h_extensions:
+    lea si, no_int13h_extensions_str
+    jmp real_mode_error
+
+real_mode_error:
+    call print_string_16
+    jmp hang
 
 
+hang:
+    jmp hang
 .include "src/asm/utils/16_print_string.asm"
 .include "src/asm/utils/16_read_disk.asm"
 .include "src/asm/utils/16_print_hex.asm"
 
 BOOT_DRIVE:			.byte	0
-ENTER_PROTECTED_MODE_STR:		.asciz 	"Entering protected mode!\r\n"
-REAL_MODE_MSG:		.asciz 	"Started in 16 bit mode!\r\n"
-READ_STAGE2_MSG:	.asciz	"Started reading stage 2!\r\n"
+ENTER_PROTECTED_MODE_STR:		.asciz 	"Protected Mode!\r\n"
+no_int13h_extensions_str: .asciz "No int13h extensions!\r\n"
+
 
 
 gdt32info:

@@ -18,8 +18,8 @@ disk_error:				# Print the return code of interrupt
 	call print_hex_16 	# See http://www.ctyme.com/intr/rb-0606.htm#Table234 for return code meaning
 	hlt
 
-DISK_ERROR_MESSAGE:		.asciz "Disk error message! Return Code: "
-DISK_SUCCESS_MESSAGE:	.asciz "Reading disk succeeded!\r\n"
+DISK_ERROR_MESSAGE:		.asciz "Disk: Error > "
+DISK_SUCCESS_MESSAGE:	.asciz "Disk: Success\r\n"
 
 DAP:	
 	.byte 0x10  # Size of dap

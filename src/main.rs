@@ -9,6 +9,7 @@
 use core::panic::PanicInfo;
 
 global_asm!(include_str!("asm/stages/stage_1.asm"));
+global_asm!(include_str!("asm/stages/stage_2.asm"));
 
 // Panic implementation is required because no standard lib
 // Diverging function marked by "never" type, never returns
