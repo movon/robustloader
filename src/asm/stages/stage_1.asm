@@ -20,14 +20,14 @@ _start:
 	lea si, REAL_MODE_MSG
 	call print_string_16
 
-	# Load the kernel from boot drive into es:bx. In our case it is 0:0x10000
+	# Load the kernel from boot drive into es:bx. In our case it is 0:0x1000
 	lea si, READ_KERNEL_MSG
 	call print_string_16
 
 	mov dl, [BOOT_DRIVE]
 	xor ax, ax
 	mov es, ax
-	mov bx, 0x10000
+	mov bx, 0x1000
 	call read_disk_16
 
 here_loop:
