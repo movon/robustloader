@@ -31,12 +31,12 @@ maybe_retry:
 	jnz again
 	jmp disk_error
 done:
-	mov si, DISK_SUCCESS_MESSAGE
+	lea si, DISK_SUCCESS_MESSAGE
 	call print_string_16
 	ret
 # Print the return code of interrupt
 disk_error:
-	lea bx, DISK_ERROR_MESSAGE
+	lea si, DISK_ERROR_MESSAGE
 	call print_string_16
 disk_error_loop:
 	jmp disk_error_loop
