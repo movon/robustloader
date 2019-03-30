@@ -38,8 +38,11 @@ done:
 disk_error:
 	lea si, DISK_ERROR_MESSAGE
 	call print_string_16
-disk_error_loop:
-	jmp disk_error_loop
+	xor dx, dx
+	mov dl, ah
+	# See http://www.ctyme.com/intr/rb-0606.htm#Table234 for return code meaning
+	call print_hex_16
+	hlt
 
 DISK_ERROR_MESSAGE:		.asciz "Disk read message! Return Code: "
 DISK_SUCCESS_MESSAGE:	.asciz "Reading disk succeeded!"

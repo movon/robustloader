@@ -34,8 +34,10 @@ here_loop:
 	jmp here_loop
 
 
+
 .include "src/asm/utils/16_print_string.asm"
 .include "src/asm/utils/16_read_disk.asm"
+.include "src/asm/utils/16_print_hex.asm"
 
 BOOT_DRIVE:			.byte	0
 REAL_MODE_MSG:		.asciz 	"Started in 16 bit mode!"
