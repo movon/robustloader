@@ -58,6 +58,7 @@ protected_mode:
 unreal_mode:
 	pop es
 	pop ds
+	sti
 
 
 here_loop:
