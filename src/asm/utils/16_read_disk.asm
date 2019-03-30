@@ -44,7 +44,7 @@ disk_error:
 	call print_hex_16
 	hlt
 
-DISK_ERROR_MESSAGE:		.asciz "Disk read message! Return Code: "
+DISK_ERROR_MESSAGE:		.asciz "Disk error message! Return Code: "
 DISK_SUCCESS_MESSAGE:	.asciz "Reading disk succeeded!\r\n"
 
 SECTORS:			.byte 0
