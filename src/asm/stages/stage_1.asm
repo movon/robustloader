@@ -130,6 +130,7 @@ hang:
 .include "src/asm/utils/16_read_disk.asm"
 .include "src/asm/utils/16_print_hex.asm"
 
+# Strings are short because we can't fit them in 512 bytes
 ENTER_PROTECTED_MODE_STR:	.asciz 	"32 bit Mode!\r\n"
 no_int13h_extensions_str: 	.asciz 	"No int13h!\r\n"
 
