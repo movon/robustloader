@@ -23,11 +23,19 @@ _start:
     lea si, ENTER_PROTECTED_MODE_STR
     call print_string_16
 
+    # enter protected mode for better segment registers
+    call enter_protected_mode
+
+    # leave protcted mode to load stage 2 from disk
+    call leave_protected_mode
+
+	# Load stage 2 code from disk into 0:_rest_of_bootloader_start_addr
+	call load_stage2
 
 enter_protected_mode:
-	# Push old segments
-    push ds
-    push es
+	# save old segments
+    mov [CURR_DS], ds
+    MOV [CURR_ES], ES
 	# disable interrupts
 	cli
 	# load GDT register with start address of Global Descriptor Table
@@ -38,26 +46,25 @@ enter_protected_mode:
 	or al, 1       
 	mov cr0, eax
 
-	jmp protected_mode
-
-protected_mode:
-	mov bx, 0x10
+	# Set bx to equal to dataseg offset in gdt32 struct
+	lea bx, datadesc
+	lea ax, gdt32
+	sub bx, ax
     mov ds, bx # set data segment
     mov es, bx # set extra segment
 
+    ret
+
+leave_protected_mode:
     # Leave protected mode
     and al, 0xfe    # clear protected mode bit
     mov cr0, eax
-	# load DS, ES, FS, GS, SS, ESP
 
-unreal_mode:
-	pop es
-	pop ds
+	mov es, [CURR_ES]
+	mov ds, [CURR_DS]
 	sti
 
-	# Load stage 2 code from disk into 0:_rest_of_bootloader_start_addr
-	call load_stage2
-
+	ret
 
 enable_a20:
     # enable A20-Line via IO-Port 92, might not work on all motherboards
@@ -77,7 +84,7 @@ load_stage2:
     # check_int13h_extensions
     mov ah, 0x41
     mov bx, 0x55aa
-    mov dl, [BOOT_DRIVE] # dl contains drive number
+    mov dl, [BOOT_DRIVE]
     int 0x13
     jc no_int13h_extensions
 
@@ -116,18 +123,19 @@ real_mode_error:
     call print_string_16
     jmp hang
 
-
 hang:
     jmp hang
+
 .include "src/asm/utils/16_print_string.asm"
 .include "src/asm/utils/16_read_disk.asm"
 .include "src/asm/utils/16_print_hex.asm"
 
-BOOT_DRIVE:			.byte	0
-ENTER_PROTECTED_MODE_STR:		.asciz 	"Protected Mode!\r\n"
-no_int13h_extensions_str: .asciz "No int13h extensions!\r\n"
+ENTER_PROTECTED_MODE_STR:	.asciz 	"32 bit Mode!\r\n"
+no_int13h_extensions_str: 	.asciz 	"No int13h!\r\n"
 
-
+BOOT_DRIVE:					.byte	0
+CURR_ES:					.word	0
+CURR_DS:					.word	0
 
 gdt32info:
    .word gdt32_end - gdt32 - 1  # last byte in table
