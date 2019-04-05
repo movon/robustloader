@@ -2,6 +2,11 @@ ENTRY(_start)
 
 SECTIONS {
     . = 0x500;
+    _e820_memory_map_start = .;
+    _e820_memory_map_num_entries = .;
+    . += 4;
+    _e820_memory_map_entries = .;
+    . += 0x1000; /* Make a buffer for the entries */
     _stack_start = .;
     . = 0x7c00;
     _stack_end = .;

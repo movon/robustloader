@@ -6,8 +6,6 @@
 # creates an e820 memory map, enters protected mode, and jumps to the
 # third stage.
 
-
-
 stage_2:
     lea si, second_stage_start_str
     call print_string_16
@@ -16,6 +14,7 @@ stage_2:
     call print_string_16
 
     call get_system_memory_map
+    
     h:
     	jmp h
 
@@ -26,7 +25,7 @@ get_system_memory_map:
 	mov edx, 0x534D4150 # Magic
 	mov ecx, 24			# Sizeof SYSTEM_MEMORY_MAP_ENTRY
 	xor ebx, ebx
-	lea di, SYSTEM_MEMORY_MAP_ENTRY
+	lea di, _e820_memory_map_entries
 
 	int 0x15
 	jc memory_map_error 	# Carry on first call means function not supported
@@ -56,7 +55,7 @@ system_memory_map_after_int:
 
 system_memory_map_end:
 	inc bp
-	mov [SYSTEM_MEMORY_MAP_ENTRY_COUNT], bp
+	mov _e820_memory_map_num_entries, bp
 	clc
 	ret
 
