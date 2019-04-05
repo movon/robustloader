@@ -23,7 +23,7 @@ get_system_memory_map:
 	xor eax, eax
 	mov ax, 0xe820 		# Get system memory map
 	mov edx, 0x534D4150 # Magic
-	mov ecx, 24			# Sizeof SYSTEM_MEMORY_MAP_ENTRY
+	mov ecx, 24			# Sizeof e820_memory_map_entry
 	xor ebx, ebx
 	lea di, _e820_memory_map_entries
 
@@ -41,7 +41,7 @@ system_memory_map_after_int:
 	xor eax, eax
 	mov ax, 0xe820
 	mov edx, 0x534D4150 	# Some BIOS destroy this register...
-	add di, 24 				
+	add di, 24 				# Sizeof e820_memory_map_entry
 	mov ecx, 24
 	# Preserve ebx for next call
 
@@ -56,7 +56,7 @@ system_memory_map_after_int:
 system_memory_map_end:
 	inc bp
 	mov _e820_memory_map_num_entries, bp
-	clc
+	clc 					# Clear the carry flag because we fail in the last call
 	ret
 
 memory_map_error:
@@ -74,10 +74,8 @@ second_stage_start_str: .asciz "Booting (second stage)...\r\n"
 return_32_bit_mode_str:	.asciz "Returning to protected mode!\r\n"
 memory_map_error_str:	.asciz "Error getting memory map, Code: "
 
-SYSTEM_MEMORY_MAP_ENTRY_COUNT:
-	.word 0
-SYSTEM_MEMORY_MAP_ENTRY:
-	.quad 0		# Base address
-	.quad 0		# Length of region. If it's 0 ignore the this entry
-	.word 0		# The type of region - 1 for usable RAM
-	.word 0		# Extended attribute field. Unused for us kept for alignment
+#e820_memory_map_entry:
+#	.quad 0		# Base address
+#	.quad 0		# Length of region. If it's 0 ignore the this entry
+#	.word 0		# The type of region - 1 for usable RAM
+#	.word 0		# Extended attribute field. Unused for us kept for alignment
