@@ -10,19 +10,17 @@ stage_2:
     lea si, second_stage_start_str
     call print_string_16
 
+    call get_system_memory_map
+
     lea si, return_32_bit_mode_str
     call print_string_16
 
-    call get_system_memory_map
-
-    call enter_protected_mode
-    push 0x8
-    lea eax, [stage_3]
-    push eax
-    retf
-    h:
-    	jmp h
-
+    call enter_protected_mode 	# This function only sets the data segmentss
+    push 0x8					# Push the code segment in the gdt
+    lea eax, [stage_3] 			# Set the return address
+    push eax					# Push the return address
+    retf						# ref first pops the return address to eip and then pops again into cs
+    
 get_system_memory_map:
 	xor bp, bp
 	xor eax, eax
