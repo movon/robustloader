@@ -14,7 +14,12 @@ stage_2:
     call print_string_16
 
     call get_system_memory_map
-    
+
+    call enter_protected_mode
+    push 0x8
+    lea eax, [stage_3]
+    push eax
+    retf
     h:
     	jmp h
 
@@ -80,3 +85,8 @@ memory_map_error_str:	.asciz "Error getting memory map, Code: "
 #	.quad 0		# Length of region. If it's 0 ignore the this entry
 #	.word 0		# The type of region - 1 for usable RAM
 #	.word 0		# Extended attribute field. Unused for us kept for alignment
+
+.code32
+stage_3:
+    jmp stage_3
+
