@@ -74,6 +74,7 @@ second_stage_start_str: .asciz "Booting (second stage)...\r\n"
 return_32_bit_mode_str:	.asciz "Returning to protected mode!\r\n"
 memory_map_error_str:	.asciz "Error getting memory map, Code: "
 
+# DOCUMENTATION:
 #e820_memory_map_entry:
 #	.quad 0		# Base address
 #	.quad 0		# Length of region. If it's 0 ignore the this entry
