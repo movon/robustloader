@@ -38,6 +38,7 @@ enter_protected_mode:
     mov [CURR_ES], es
 	# disable interrupts
 	cli
+
 	# load GDT register with start address of Global Descriptor Table
     lgdt [gdt32info]
 
@@ -52,6 +53,7 @@ enter_protected_mode:
 	sub bx, ax
     mov ds, bx # set data segment
     mov es, bx # set extra segment
+
     # enable interrupts again
     sti
     ret
@@ -59,6 +61,7 @@ enter_protected_mode:
 leave_protected_mode:
     # clear interrupts
     cli
+
     # Leave protected mode
     and al, 0xfe    # clear protected mode bit
     mov cr0, eax
