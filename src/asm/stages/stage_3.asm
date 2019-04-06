@@ -6,6 +6,7 @@
 
 stage_3:
 	call check_cpuid_support
+	call check_long_mode_support
 	h:
 		jmp h
 
@@ -38,11 +39,31 @@ cpuid_not_supported:
 	call print_string_32
 	hlt
 
-check_available_long_mode:
+check_long_mode_support:
+	push edx
+
+	mov eax, 0x80000000				# Check if extendeded cpuid functions are available
+	cpuid 							# which we need to check if long mode is supported
+	cmp eax, 0x80000001				# It returns the highest function
+	jb long_mode_not_supported
+
+	mov eax, 0x80000001
+	cpuid
+	test edx, 1 << 29 				# Check if long mode is supported
+	jz long_mode_not_supported
+
+	pop edx
+	ret
+
+long_mode_not_supported:
+	lea esi, long_mode_not_supported_str
+	call print_string_32
+	hlt
 
 .include "src/asm/utils/32_print_string.asm"
 
-cpuid_not_supported_str:	.asciz	"cpuid is not supported, no way to check long mode"
+cpuid_not_supported_str:		.asciz	"cpuid is not supported, no way to check long mode"
+long_mode_not_supported_str:	.asciz	"long mode is not supported!"
 
 
 	
