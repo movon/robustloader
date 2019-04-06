@@ -13,6 +13,22 @@ stage_3:
 
 	lea si, paging_enabled_str
 	call print_string_32
+
+	lgdt [gdt64_info]
+
+	mov ax, 0x10
+	mov ss, ax
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
+
+	push 8
+	lea eax, [long_mode_start]
+	push eax
+	retf
+
 	h:
 		jmp h	
 
@@ -125,6 +141,33 @@ enable_paging:
 	pop ecx
 	ret
 
+gdt64_info:
+	.word gdt64_end - gdt64 - 1
+	.quad gdt64
+
+gdt64:
+	.word 0                    		# Limit (low).
+    .word 0                         # Base (low).
+    .byte 0                         # Base (middle)
+    .byte 0                         # Access.
+    .byte 0                         # Granularity.
+    .byte 0  		
+codeseg64:
+	.word 0                         # Limit (low).
+    .word 0                         # Base (low).
+    .byte 0                         # Base (middle)
+    .byte 0b10011000                # Access (exec/read).
+    .byte 0b00100000                # Granularity, 64 bits flag, limit19:16.
+    .byte 0                         # Base (high).
+dataseg64:
+    .word 0                         # Limit (low).
+    .word 0                         # Base (low).
+    .byte 0                         # Base (middle)
+    .byte 0b10010000                # Access (read/write).
+    .byte 0b00000000                # Granularity.
+    .byte 0                         # Base (high).
+gdt64_end:
+
 
 .include "src/asm/utils/32_print_string.asm"
 
@@ -133,4 +176,12 @@ long_mode_not_supported_str:	.asciz	"long mode is not supported!"
 paging_enabled_str:				.asciz  "Paging is officaly enabled!"
 
 
-	
+# A gdt is always required... so we define a new 64 bit gdt
+# The entries in it are meaningless though
+
+
+.code64
+long_mode_start:
+	mov rax, 0x2f592f412f4b2f4f
+    mov [0xb8000], rax
+    hlt
