@@ -14,12 +14,9 @@ stage_3:
 	call check_cpuid_support
 	call check_long_mode_support
 
-
-
 	cli # disable interrupts
 
 	lidt [zero_idt]
-
 
 	call setup_pae_paging
 	call enable_paging
@@ -32,8 +29,6 @@ stage_3:
 	lea eax, [long_mode_start]
 	push eax
 	retf
-	h:
-		jmp h	
 
 
 check_cpuid_support:
@@ -101,10 +96,9 @@ setup_pae_paging:
 	xor eax, eax
 	rep stosd # zero out entire page table
 
-
 	push ecx
 
-	lea eax, [_pdpt]		# Load the adress of the page table diretory pointer into eax
+	lea eax, [_pdpt]	# Load the adress of the page table diretory pointer into eax
 	or eax, 0x3 		# present + read write page attributes
 	mov [_pmlt4], eax	# map the first entry in the page map level 4 table to the adress
 						# of the page table directory pointer with rw and present attributes
@@ -195,11 +189,6 @@ gdt_64_pointer:
 cpuid_not_supported_str:		.asciz	"cpuid is not supported, no way to check long mode"
 long_mode_not_supported_str:	.asciz	"long mode is not supported!"
 paging_enabled_str:				.asciz  "Paging is officaly enabled!"
-
-
-# A gdt is always required... so we define a new 64 bit gdt
-# The entries in it are meaningless though
-
 
 .code64
 long_mode_start:
