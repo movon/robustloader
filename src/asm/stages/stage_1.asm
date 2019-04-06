@@ -54,13 +54,9 @@ enter_protected_mode:
     mov ds, bx # set data segment
     mov es, bx # set extra segment
 
-    # enable interrupts again
-    sti
     ret
 
 leave_protected_mode:
-    # clear interrupts
-    cli
 
     # Leave protected mode
     and al, 0xfe    # clear protected mode bit
