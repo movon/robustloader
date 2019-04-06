@@ -23,12 +23,6 @@ _start:
     lea si, ENTER_PROTECTED_MODE_STR
     call print_string_16
 
-    # enter protected mode for better segment registers
-    call enter_protected_mode
-
-    # leave protcted mode to load stage 2 from disk
-    call leave_protected_mode
-
 	# Load stage 2 code from disk into 0:_rest_of_bootloader_start_addr
 	call load_stage2
 
