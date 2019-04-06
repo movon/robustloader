@@ -84,7 +84,3 @@ memory_map_error_str:	.asciz "Error getting memory map, Code: "
 #	.word 0		# The type of region - 1 for usable RAM
 #	.word 0		# Extended attribute field. Unused for us kept for alignment
 
-.code32
-stage_3:
-    jmp stage_3
-
