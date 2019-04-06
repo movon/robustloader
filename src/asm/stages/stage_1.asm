@@ -35,7 +35,7 @@ _start:
 enter_protected_mode:
 	# save old segments
     mov [CURR_DS], ds
-    MOV [CURR_ES], ES
+    mov [CURR_ES], es
 	# disable interrupts
 	cli
 	# load GDT register with start address of Global Descriptor Table
