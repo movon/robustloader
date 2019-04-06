@@ -5,13 +5,14 @@
 # First byte is the ascii code  and the second encodes the character attributes. 
 # To find the index 0xb8000 + 2 * (row * 80 + col)
 # WHITE_ON_BLACK equ 0x0f
+# WHITE_ON_RED   equ 0x4f
 
 print_string_32:
     pusha 
     mov edx, 0xb8000
 print_string_32_loop:
     mov al, [esi]               # Store the char at ebx in AL
-    mov ah, 0x0f                # Store the attributes in AH
+    mov ah, 0x4f                # Store the attributes in AH
 
     cmp al, 0                   # Check if we hit the null terminator
     je print_string_32_done
