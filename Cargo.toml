@@ -6,6 +6,11 @@ edition = "2018"
 
 [dependencies]
 
+[dependencies.font8x8]
+version = "0.2.4"
+default-features = false
+features = ["unicode"]
+
 [profile.dev]
 panic = "abort"
 
