@@ -87,6 +87,9 @@ setup_pae_paging:
 	# with rw + present
 	# At last, it sets every entry(512 entries) in _pdt to rw + present + huge which
 	# means every entry is a page of 2mb which identity allocates the first gigabyte
+	
+	push ecx
+	push edi
 
 	# first zero out the page table!
 	lea edi, [__page_table_start]
@@ -96,7 +99,6 @@ setup_pae_paging:
 	xor eax, eax
 	rep stosd # zero out entire page table
 
-	push ecx
 
 	lea eax, [_pdpt]	# Load the adress of the page table diretory pointer into eax
 	or eax, 0x3 		# present + read write page attributes
@@ -117,6 +119,7 @@ map_pdt_table:
 	cmp ecx, 512
 	jne map_pdt_table
 
+	pop edi
 	pop ecx
 	ret
 
