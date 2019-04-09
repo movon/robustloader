@@ -13,7 +13,6 @@
 
 use core::panic::PanicInfo;
 use core::fmt::Write;
-use core::slice;
 
 global_asm!(include_str!("asm/stages/stage_1.asm"));
 global_asm!(include_str!("asm/stages/stage_2.asm"));
@@ -39,12 +38,8 @@ extern "C" {
     static __bootloader_end: usize;
 }
 
-const VGA_BUFFER: *mut u8 = 0xb8000 as *mut _;
-fn vga_buffer() -> &'static mut [u8] {
-    unsafe { slice::from_raw_parts_mut(VGA_BUFFER, 320 * 200) }
-}
-
 mod printer;
+
 /*
     Entry point with linux convention
     Normally, the compiler generates them for us and calls our main() function,
@@ -57,10 +52,7 @@ pub unsafe extern "C" fn stage_4() -> ! {
     // set stack segment
     asm!("mov bx, 0x00
           mov ss, bx" ::: "bx" : "intel");
-
-    let vga_buffer = vga_buffer();
-    for byte in vga_buffer {
-        *byte = 0x41;
-    }
+    printer::Printer.clear_screen();
+    write!(printer::Printer, "RUNNING FROM RUST YEAH  :D :))))))) !!!!@#!@#!@#!@#!@#!@#").unwrap();
     loop {}
 }
