@@ -6,7 +6,7 @@
 # This stage checks for 64 bit, Sets up paging and enters long mode
 
 stage_3:
-	mov ax, 0x10
+	mov ax, 0x10 	# Set ax to the data segment in the 32 bit gdt
 	mov ss, ax
     mov ds, ax
     mov es, ax
@@ -25,7 +25,7 @@ stage_3:
 	call print_string_32
 
 	lgdt gdt_64_pointer
-	push 8
+	push 0x8
 	lea eax, [long_mode_start]
 	push eax
 	retf
@@ -143,7 +143,7 @@ enable_paging:
 	or eax, 1 << 8		# Enable long mode bit
 	wrmsr 				# Write into model specific register
 
-	mov eax, cr0	 	# Enable paging 
+	mov eax, cr0	 	# Enable paging by settings the 32th bit (the paging bit)
 	or eax, 1 << 31
 	mov cr0, eax
 
@@ -192,6 +192,7 @@ paging_enabled_str:				.asciz  "Paging is officaly enabled!"
 
 .code64
 long_mode_start:
+	# Print OK in green to the screen
 	mov rax, 0x2f592f412f4b2f4f
     mov [0xb8000], rax
     jmp stage_4
