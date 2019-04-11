@@ -4,6 +4,7 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 
 const VGA_BUFFER: *mut u8 = 0xb8000 as *mut _;
 const SCREEN_SIZE: usize = 80 * 25;
+const WHITE_ON_RED: u8 = 0x4f;
 
 pub static CURRENT_OFFSET: AtomicUsize = AtomicUsize::new(160);
 
@@ -29,7 +30,7 @@ impl Write for Printer {
         for byte in s.bytes() {
             let index = CURRENT_OFFSET.fetch_add(2, Ordering::Relaxed);
             vga_buffer[index] = byte;
-            vga_buffer[index + 1] = 0x4f;
+            vga_buffer[index + 1] = WHITE_ON_RED;
         }
 
         Ok(())
