@@ -2,7 +2,6 @@
 .intel_syntax noprefix
 .code32
 
-
 # This stage checks for 64 bit, Sets up paging and enters long mode
 
 stage_3:
@@ -132,8 +131,6 @@ enable_paging:
     wbinvd # write back cache
     mfence # add memory fence
 
-	push ecx
-
 	lea eax, [_pmlt4]
 	mov cr3, eax
 
@@ -150,7 +147,6 @@ enable_paging:
 	or eax, 1 << 31
 	mov cr0, eax
 
-	pop ecx
 	ret
 
 .align 4
