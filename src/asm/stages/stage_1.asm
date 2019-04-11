@@ -23,16 +23,17 @@ _start:
     lea si, ENTER_PROTECTED_MODE_STR
     call print_string_16
 
-    # enter protected mode for better segment registers
+    # enter protected mode for better segment registers(Not code segment)
     call enter_protected_mode
 
-    # leave protcted mode to load stage 2 from disk
+    # leave protcted mode to unreal mode to load stage 2 from disk
     call leave_protected_mode
 
 	# Load stage 2 code from disk into 0:_rest_of_bootloader_start_addr
 	call load_stage2
 
 enter_protected_mode:
+	# This function only sets the data segments, not the code segment
 	# save old segments
     mov [CURR_DS], ds
     mov [CURR_ES], es
@@ -97,19 +98,19 @@ load_stage2:
     lea eax, _rest_of_bootloader_start_addr
 
     # start of memory buffer
-    mov [DAP_BUFFER_ADDR], ax
+    mov [DAP_BUFFER_ADDR], ax 	# Defined in 16_read_disk
 
     # number of disk blocks to load
     lea ebx, _kernel_info_block_end
     sub ebx, eax # end - start
     shr ebx, 9 # divide by 512 (block size)
-    mov [DAP_BLOCKS], bx
+    mov [DAP_BLOCKS], bx		# Defined in 16_read_disk
 
     # number of start block
     lea ebx, _start
     sub eax, ebx
     shr eax, 9 # divide by 512 (block size)
-    mov [DAP_START_LBA], eax
+    mov [DAP_START_LBA], eax	# Defined in 16_read_disk
 
 
     call read_disk_16
