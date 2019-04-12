@@ -53,6 +53,8 @@ pub unsafe extern "C" fn stage_4() -> ! {
     asm!("mov bx, 0x00
           mov ss, bx" ::: "bx" : "intel");
     printer::Printer.clear_screen();
-    write!(printer::Printer, "RUNNING FROM RUST YEAH  :D :))))))) !!!!@#!@#!@#!@#!@#!@#").unwrap();
+    write!(printer::Printer, "RUNNING FROM RUST YEAH  :D :))))))) !!!!\t@#!@#!@#!@#!@#!@#\n").unwrap();
+	write!(printer::Printer, "kernel size: {}", _kib_kernel_size).unwrap();
+
     loop {}
 }
