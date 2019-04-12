@@ -7,6 +7,7 @@ const MAX_ROWS: usize = 25;
 const MAX_COLS: usize = 80;
 const SCREEN_SIZE: usize = MAX_ROWS * MAX_COLS;
 const WHITE_ON_RED: u8 = 0x4f;
+const WHITE_ON_BLACK: u8 = 0x0f;
 const VGA_CELL_SIZE: usize = 2;
 
 pub static CURRENT_OFFSET: AtomicUsize = AtomicUsize::new(160);
@@ -34,7 +35,8 @@ impl Write for Printer {
             // byte should be mutable because we don't want to print specials chars
             let index = match byte as char {
                 '\n'    =>  { byte = ' ' as u8;
-                            CURRENT_OFFSET.fetch_add((CURRENT_OFFSET.load(Ordering::Relaxed) % MAX_ROWS) * VGA_CELL_SIZE, Ordering::Relaxed) 
+                            let size_to_end = (MAX_COLS - ((CURRENT_OFFSET.load(Ordering::Relaxed) / 2) % MAX_COLS)) * VGA_CELL_SIZE;
+                            CURRENT_OFFSET.fetch_add(size_to_end, Ordering::Relaxed) 
                             },
                 '\t'    =>  { byte = ' ' as u8;
                             CURRENT_OFFSET.fetch_add(VGA_CELL_SIZE * 4, Ordering::Relaxed)
@@ -43,7 +45,7 @@ impl Write for Printer {
             };
             // let index = CURRENT_OFFSET.fetch_add(VGA_CELL_SIZE, Ordering::Relaxed);
             vga_buffer[index] = byte;
-            vga_buffer[index + 1] = WHITE_ON_RED;
+            vga_buffer[index + 1] = WHITE_ON_BLACK;
         }
 
         Ok(())
