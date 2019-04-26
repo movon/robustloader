@@ -14,7 +14,7 @@
 use core::panic::PanicInfo;
 use core::fmt::Write;
 use core::mem::size_of;
-use core::slice;
+use core::{slice, fmt};
 
 global_asm!(include_str!("asm/stages/stage_1.asm"));
 global_asm!(include_str!("asm/stages/stage_2.asm"));
@@ -55,7 +55,7 @@ pub unsafe extern "C" fn stage_4() -> ! {
     asm!("mov bx, 0x00
           mov ss, bx" ::: "bx" : "intel");
     printer::Printer.clear_screen();
-    write!(printer::Printer, "RUNNING FROM RUST YEAH  :D :))))))) !!!!\t@#!@#!@#!@#!@#!@#\n\n\n\n").unwrap();
+    write!(printer::Printer, "RUNNING FROM RUST YEAH  :D :))))))) !!!!").unwrap();
 	write!(printer::Printer, "kernel size: 0x{:x}\n", _kib_kernel_size).unwrap();
 	write!(printer::Printer, "0x{:x}\n", _e820_memory_map_num_entries).unwrap();
 
@@ -63,7 +63,6 @@ pub unsafe extern "C" fn stage_4() -> ! {
 
     loop {}
 }
-
 struct MemoryBlock {
 	base_address: u64,
 	region_length: u64,
@@ -71,6 +70,22 @@ struct MemoryBlock {
 	extended_attribute: u32,
 }
 
+// In order to use the `{}` marker, the trait `fmt::Display` must be implemented
+// manually for the type.
+impl fmt::Display for MemoryBlock {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Write strictly the first element into the supplied output
+        // stream: `f`. Returns `fmt::Result` which indicates whether the
+        // operation succeeded or failed. Note that `write!` uses syntax which
+        // is very similar to `println!`.
+        write!(f, "base_address: 0x{:x}\n", self.base_address).unwrap();
+        write!(f, "region_length: 0x{:x}\n", self.region_length).unwrap();
+        write!(f, "extended_attribute: 0x{:x}\n", self.extended_attribute).unwrap();
+        write!(f, "region_type: 0x{:x}\n", self.region_type).unwrap();
+        Ok(())
+    }
+}
 
 enum MemoryBlockType {
 	Usable(MemoryBlock),
@@ -83,10 +98,8 @@ enum MemoryBlockType {
 fn parse_mmap() {
 	let memory_map: *const MemoryBlock = unsafe { _e820_memory_map_entries as *const _ };
     let memory_array = unsafe { slice::from_raw_parts(memory_map, (_e820_memory_map_num_entries as usize) * size_of::<MemoryBlockType>()) };
-    let num_entries = unsafe { _e820_memory_map_num_entries };
-    let mut index = 0;
+    let num_entries :usize = unsafe { _e820_memory_map_num_entries  as usize};
     for i in 0 .. num_entries {
-        let base_address: u64 = unsafe { (*memory_map).extended_attribute as u64 };
-        write!(printer::Printer, "0x{:x}", base_address).unwrap();
+        write!(printer::Printer, " -- memory_entry {}: {}\n\n",i, memory_array[i]);
     }
 }
